@@ -45,16 +45,14 @@ function isMagicAccessory(text) {
   if (!text) return false;
   let lower = text.toLowerCase();
   
-  // Armaduras y escudos puros se gestionan en su propio selector de CA
   let isPureArmorOrShield = /^(armadura|cuero|malla|placas|coraza|escudo|rodela|broquel|paves|tarja)(\s+[\+\-]?\d+)?$/i.test(lower.trim());
   if (isPureArmorOrShield) return false;
 
-  // Detección universal: nombres de accesorios, palabras mágicas o etiquetas de atributos/bonos
-  return /anillo|colgante|collar|brazalete|brazales|pendiente|amuleto|talisman|talismán|capa|cintur[oó]n|cinto|guanteletes|guantes|diadema|yelmo|perla|broche|tiara|medall[oó]n|vara|varita|orbe|botas|piedra/i.test(lower) ||
+  return /anillo|colgante|collar|brazalete|brazales|pendiente|amuleto|talisman|talismán|capa|cintur[oó]n|cinto|guanteletes|guantes|diadema|yelmo|perla|broche|tiara|medall[oó]n|vara|varita|orbe|botas/i.test(lower) ||
          /maldit|m[aá]gic|bono/i.test(lower) ||
-         /(?:fue|str|int|sab|wis|des|dex|con|car|cha|fuerza|destreza|constitucion|constitución|sabiduria|sabiduría|inteligencia|carisma|atq|ataque|ba|da[nñ]o|dmg|ca|ts|pg|hp|px|xp|exp)\s*[:\+\-]/i.test(lower) ||
-         /[:\+\-]\s*(?:fue|str|int|sab|wis|des|dex|con|car|cha|fuerza|destreza|constitucion|constitución|sabiduria|sabiduría|inteligencia|carisma|atq|ataque|ba|da[nñ]o|dmg|ca|ts|pg|hp|px|xp|exp)/i.test(lower) ||
-         /pg\s*[:\s]*[xX]\d+/i.test(lower);
+         /\b(?:fue|str|int|sab|wis|des|dex|con|car|cha|fuerza|destreza|constitucion|constitución|sabiduria|sabiduría|inteligencia|carisma|atq|ataque|ba|da[nñ]o|dmg|ca|ts|pg|hp|px|xp|exp)\b\s*[:\+\-]/i.test(lower) ||
+         /[:\+\-]\s*\b(?:fue|str|int|sab|wis|des|dex|con|car|cha|fuerza|destreza|constitucion|constitución|sabiduria|sabiduría|inteligencia|carisma|atq|ataque|ba|da[nñ]o|dmg|ca|ts|pg|hp|px|xp|exp)\b/i.test(lower) ||
+         /\bpg\b\s*[:\s]*[xX]\d+/i.test(lower);
 }
 
 function getPassiveAccessoryBonuses() {
@@ -142,11 +140,11 @@ function getPassiveAccessoryBonuses() {
     }
 
     // 7. Ataque y Daño directos
-    let atkModMatch = raw.match(/([\+\-]\d+)\s*(?:al?\s+)?(atq|ataque|impactar|ba)\b/i) || raw.match(/\b(atq|ataque|impactar|ba)\s*[:\s]*([\+\-]\d+)/i);
+    let atkModMatch = raw.match(/([\+\-]\d+)\s*(?:al?\s+)?\b(atq|ataque|impactar|ba)\b/i) || raw.match(/\b(atq|ataque|impactar|ba)\b\s*[:\s]*([\+\-]\d+)/i);
     if (atkModMatch) {
       bonuses.atk += (parseInt(atkModMatch[1]) || parseInt(atkModMatch[2]));
     }
-    let dmgModMatch = raw.match(/([\+\-]\d+)\s*(?:al?\s+)?(da[nñ]o|dmg)/i) || raw.match(/\b(da[nñ]o|dmg)\s*[:\s]*([\+\-]\d+)/i);
+    let dmgModMatch = raw.match(/([\+\-]\d+)\s*(?:al?\s+)?\b(da[nñ]o|dmg)\b/i) || raw.match(/\b(da[nñ]o|dmg)\b\s*[:\s]*([\+\-]\d+)/i);
     if (dmgModMatch) {
       bonuses.dmg += (parseInt(dmgModMatch[1]) || parseInt(dmgModMatch[2]));
     }
@@ -1598,10 +1596,10 @@ function updateWeapons() {
     let bMatch = rawName.match(/(?:^|\s)([\+\-]\d+)(?:\s|$|\()/);
     if (bMatch) bonus = parseInt(bMatch[1]);
 
-    let atkMatch = rawName.match(/([\+\-]\d+)\s*(?:al?\s+)?(atq|ataque|impactar|ba)\b/i) || rawName.match(/\b(atq|ataque|impactar|ba)\s*[:\s]*([\+\-]\d+)/i);
+    let atkMatch = rawName.match(/([\+\-]\d+)\s*(?:al?\s+)?\b(atq|ataque|impactar|ba)\b/i) || rawName.match(/\b(atq|ataque|impactar|ba)\b\s*[:\s]*([\+\-]\d+)/i);
     if (atkMatch) bonus = parseInt(atkMatch[1]) || parseInt(atkMatch[2]);
 
-    let dmgMatch = rawName.match(/([\+\-]\d+)\s*(?:al?\s+)?(da[nñ]o|dmg)/i) || rawName.match(/\b(da[nñ]o|dmg)\s*[:\s]*([\+\-]\d+)/i);
+    let dmgMatch = rawName.match(/([\+\-]\d+)\s*(?:al?\s+)?\b(da[nñ]o|dmg)\b/i) || rawName.match(/\b(da[nñ]o|dmg)\b\s*[:\s]*([\+\-]\d+)/i);
     if (dmgMatch) extraDmg = parseInt(dmgMatch[1]) || parseInt(dmgMatch[2]);
 
     let fMatch = rawName.match(/\(([^)]+)\)/);
@@ -1613,17 +1611,17 @@ function updateWeapons() {
     }
 
     if (!dmgFormula) {
-      if (/daga|jabalina/i.test(lower)) dmgFormula = '1d4';
-      else if (/lanza de caballer|dos manos|alabarda|pica/i.test(lower)) dmgFormula = '1d10';
-      else if (/hacha de mano|espada corta|maza|martillo|bastón|baston|arco|ballesta|lanza/i.test(lower)) dmgFormula = '1d6';
-      else if (/espada|hacha de batalla|hacha/i.test(lower)) dmgFormula = '1d8';
-      else if (/honda|dardo|garrote|antorcha/i.test(lower)) dmgFormula = '1d4';
+      if (/\b(dagas?|jabalinas?)\b/i.test(lower)) dmgFormula = '1d4';
+      else if (/\b(lanzas? de caballer|dos manos|alabardas?|picas?)\b/i.test(lower)) dmgFormula = '1d10';
+      else if (/\b(hachas? de mano|espadas? cortas?|mazas?|martillos?|bastón|bastones|arcos?|ballestas?|lanzas?)\b/i.test(lower)) dmgFormula = '1d6';
+      else if (/\b(espadas?|hachas? de batalla|hachas?)\b/i.test(lower)) dmgFormula = '1d8';
+      else if (/\b(hondas?|dardos?|garrotes?|antorchas?)\b/i.test(lower)) dmgFormula = '1d4';
     }
 
     if (!dmgFormula) return; 
 
-    let isThrown = /arrojadiz|daga|hacha de mano|lanza|jabalina/i.test(lower);
-    let isMissileOnly = /arco|ballesta|honda|proyectil|distancia/i.test(lower) && !isThrown;
+    let isThrown = /\b(arrojadiz[ao]s?|dagas?|hachas? de mano|lanzas?|jabalinas?)\b/i.test(lower);
+    let isMissileOnly = /\b(arcos?|ballestas?|hondas?|proyectil(es)?|distancia)\b/i.test(lower) && !isThrown;
 
     let avail = 1;
     let thrownKey = null;
