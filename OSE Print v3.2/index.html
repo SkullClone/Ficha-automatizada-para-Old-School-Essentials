@@ -1,0 +1,675 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="theme-color" content="#000000">
+  <title>Hoja de Personaje Universal OSE - AutoCalculada</title>
+  <link rel="icon" type="image/png" href="https://logos-world.net/wp-content/uploads/2025/02/Old-School-Essentials-OSE-Logo-500x281.png">
+  <link rel="manifest" href="manifest.json">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;700&family=Noto+Serif:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <!-- WIZARD OVERLAY -->
+  <div id="wizard-overlay" style="display:none; position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(224,224,224,0.95); z-index:100000; overflow-y:auto; flex-direction:column; padding:15px; font-family:var(--font-body);">
+    <div style="max-width:420px; width:100%; margin:20px auto; background:#fff; border:3px solid #000; padding:20px; box-shadow:0 10px 25px rgba(0,0,0,0.5);">
+      <div class="title-logo" style="font-size:2rem;">OLD-SCHOOL ESSENTIALS</div>
+      <div class="subtitle-logo" style="margin-bottom:20px;">CREACIÓN DE PERSONAJE</div>
+      
+      <!-- STEP 0: CHOICE -->
+      <div id="wiz-step-0" class="flex-col align-center" style="gap:14px;">
+        <p style="text-align:center; font-style:italic; margin:0 0 4px 0;">Bienvenido. ¿Cómo deseas crear tu personaje?</p>
+        <button type="button" class="wiz-btn-choice" style="background:#333; color:#fff;" onclick="startGuided()">
+          <span>MODO GUIADO</span>
+          <span style="font-size:0.75rem; font-family:var(--font-body); font-weight:normal; text-transform:none; opacity:0.85;">(Paso a paso)</span>
+        </button>
+        <button type="button" class="wiz-btn-choice" style="background:#fff; color:#000;" onclick="startDirect()">
+          <span>MODO DIRECTO</span>
+          <span style="font-size:0.75rem; font-family:var(--font-body); font-weight:normal; text-transform:none; opacity:0.85;">(Hoja editable)</span>
+        </button>
+      </div>
+
+      <!-- STEP 1: STATS -->
+      <div id="wiz-step-1" class="flex-col" style="display:none; gap:10px;">
+        <h2 class="wiz-title">1. CARACTERÍSTICAS</h2>
+        <div class="flex justify-between align-center mb-5">
+          <span class="italic" style="font-size:0.85rem;">Genera tus puntuaciones (3-18).</span>
+          <button type="button" class="btn-action clickable" style="font-size:0.9rem;" onclick="randomizeWizStats()">TIRAR 3d6</button>
+        </div>
+        <div class="flex-col gap-5">
+          <div class="stat-row"><div class="stat-box">FUE</div><div class="stat-input"><input type="number" id="wiz-stat-fue" value="10" min="3" max="18"></div><div class="stat-desc">Ataque/daño melé</div></div>
+          <div class="stat-row"><div class="stat-box">INT</div><div class="stat-input"><input type="number" id="wiz-stat-int" value="10" min="3" max="18"></div><div class="stat-desc">Idiomas y alfabetización</div></div>
+          <div class="stat-row"><div class="stat-box">SAB</div><div class="stat-input"><input type="number" id="wiz-stat-sab" value="10" min="3" max="18"></div><div class="stat-desc">Salvación vs magia</div></div>
+          <div class="stat-row"><div class="stat-box">DES</div><div class="stat-input"><input type="number" id="wiz-stat-des" value="10" min="3" max="18"></div><div class="stat-desc">Proyectiles y CA</div></div>
+          <div class="stat-row"><div class="stat-box">CON</div><div class="stat-input"><input type="number" id="wiz-stat-con" value="10" min="3" max="18"></div><div class="stat-desc">Puntos de golpe</div></div>
+          <div class="stat-row"><div class="stat-box">CAR</div><div class="stat-input"><input type="number" id="wiz-stat-car" value="10" min="3" max="18"></div><div class="stat-desc">Reacciones y lealtad</div></div>
+        </div>
+        <button type="button" class="btn-rest mt-10" style="padding:10px; font-size:1.1rem;" onclick="acceptWizStats()">CONTINUAR</button>
+      </div>
+
+      <!-- STEP 2: CLASS -->
+      <div id="wiz-step-2" class="flex-col" style="display:none; gap:10px;">
+        <h2 class="wiz-title">2. CLASE Y ALINEAMIENTO</h2>
+        <p class="italic text-center" style="margin:0 0 6px 0;">Elige tu clase y alineamiento.</p>
+        <div class="flex-col gap-5 mb-5">
+          <span style="font-size:0.8rem; font-weight:bold; font-family:var(--font-heading);">CLASE:</span>
+          <select id="wiz-class" style="border:2px solid black; padding:6px; font-size:1.1rem; background:#f4f4f4; width:100%;"></select>
+        </div>
+        <div class="flex-col gap-5 mb-5">
+          <span style="font-size:0.8rem; font-weight:bold; font-family:var(--font-heading);">ALINEAMIENTO:</span>
+          <select id="wiz-align" style="border:2px solid black; padding:6px; font-size:1.1rem; background:#f4f4f4; width:100%;">
+            <option value="Legal">Legal</option>
+            <option value="Neutral" selected>Neutral</option>
+            <option value="Caótico">Caótico</option>
+          </select>
+        </div>
+        <button type="button" class="btn-rest mt-10" style="padding:10px; font-size:1.1rem;" onclick="acceptWizClass()">CONTINUAR</button>
+      </div>
+
+      <!-- STEP 2b: IDIOMAS Y ALFABETIZACIÓN -->
+      <div id="wiz-step-lang" class="flex-col" style="display:none; gap:10px;">
+        <h2 class="wiz-title">3. IDIOMAS</h2>
+        <div id="wiz-lang-status" class="trait-badge" style="text-align:center; padding:6px; font-size:0.9rem; margin:0; background:#000; color:#fff;"></div>
+        <p class="italic text-center" id="wiz-lang-desc" style="font-size:0.85rem; margin:0;"></p>
+        <div id="wiz-lang-list" class="flex-col gap-5" style="max-height:220px; overflow-y:auto; border:1px solid #000; padding:6px; background:#fafafa;"></div>
+        <button type="button" class="btn-rest mt-5" style="padding:10px; font-size:1.1rem;" onclick="acceptWizLanguages()">CONTINUAR</button>
+      </div>
+
+      <!-- STEP 3: HP -->
+      <div id="wiz-step-3" class="flex-col" style="display:none; gap:10px;">
+        <h2 class="wiz-title">4. PUNTOS DE GOLPE</h2>
+        <p class="italic text-center" id="wiz-hp-info" style="margin:0 0 5px 0;"></p>
+        
+        <div class="flex-col align-center mt-5 mb-5" style="background:#fafafa; border:2px solid #000; padding:15px; border-radius:2px;">
+          <span id="wiz-hd-roll-label" style="font-family:var(--font-heading); font-size:0.9rem; font-weight:bold; margin-bottom:15px; text-transform:uppercase;">Tirada de 1d8</span>
+          
+          <div class="flex align-center justify-center gap-10" style="width:100%;">
+            
+            <!-- Botón Dado -->
+            <div class="flex-col align-center gap-4">
+              <button type="button" id="wiz-hp-die-btn" class="clickable" onclick="rollWizHP()" style="background:none; border:none; padding:0; margin:0; width:65px; height:65px; display:flex; align-items:center; justify-content:center; outline:none;">
+                <!-- El SVG se inyectará aquí desde app.js -->
+              </button>
+              <span style="font-size:0.75rem; font-weight:bold; font-family:var(--font-heading);">TIRAR DADO</span>
+            </div>
+
+            <div style="font-size:1.5rem; font-weight:bold;">+</div>
+
+            <!-- Mod CON -->
+            <div class="flex-col align-center gap-4">
+              <span id="wiz-chip-con" class="trait-badge" style="margin:0; font-size:1.1rem; padding:8px 12px; background:#000; color:#fff; border-radius:4px; border:2px solid #000;">+0</span>
+              <span style="font-size:0.75rem; font-weight:bold; font-family:var(--font-heading);">MOD. CON</span>
+            </div>
+
+            <div style="font-size:1.5rem; font-weight:bold;">=</div>
+
+            <!-- PG Totales (estilo ficha) -->
+            <div class="flex-col align-center gap-4">
+              <div class="flex gap-0 align-center border" style="background:#fff; height:55px;">
+                <div class="stat-box" style="height:100%; width:42px; font-size:1.25rem; margin:0; border:none; border-right:2px solid var(--border-color);">PG</div>
+                <div style="width:65px; height:100%;">
+                  <input type="number" id="wiz-hp-val" readonly placeholder="0" style="border:none; text-align:center; font-size:2.2rem; font-weight:bold; width:100%; height:100%; background:transparent; color:#000; padding:0;">
+                </div>
+              </div>
+              <span style="font-size:0.75rem; font-weight:bold; font-family:var(--font-heading);">TOTALES</span>
+            </div>
+
+          </div>
+
+          <div class="flex align-center justify-center gap-5 mt-10" style="border-top:1px dashed #ccc; padding-top:10px; width:100%;">
+             <span style="font-size:0.8rem; font-style:italic;">O introduce el valor del dado manualmente:</span>
+             <input type="number" id="wiz-hp-die" min="1" max="8" placeholder="—" oninput="calcWizHPTotal()" style="border:2px solid black; text-align:center; font-size:1.2rem; font-weight:bold; width:50px; height:34px; background:#fff;">
+          </div>
+        </div>
+
+        <button type="button" class="btn-rest mt-5" style="padding:10px; font-size:1.1rem;" onclick="acceptWizHP()">CONTINUAR</button>
+      </div>
+
+      <!-- STEP 4: GOLD -->
+      <div id="wiz-step-4" class="flex-col" style="display:none; gap:10px;">
+        <h2 class="wiz-title">5. ORO INICIAL</h2>
+        <p class="italic text-center" style="margin:0;">Tira 3d6 x 10 para determinar tu oro inicial (mo).</p>
+        <div class="flex gap-10 align-center mt-10 mb-10">
+           <button type="button" class="btn-action clickable" style="padding:12px; font-size:1.1rem;" onclick="rollWizGold()">TIRAR ORO</button>
+           <input type="number" id="wiz-gold-val" placeholder="mo" style="border:2px solid black; text-align:center; font-size:1.8rem; font-weight:bold; height:50px; flex:1;">
+        </div>
+        <button type="button" class="btn-rest" style="padding:10px; font-size:1.1rem;" onclick="acceptWizGold()">CONTINUAR</button>
+      </div>
+
+      <!-- STEP 5: SHOP -->
+      <div id="wiz-step-5" class="flex-col" style="display:none; gap:10px;">
+        <h2 class="wiz-title">6. EQUIPO</h2>
+        <div class="flex justify-between align-center" style="background:#000; color:#fff; padding:8px 12px; border-radius:2px;">
+          <span style="font-family:var(--font-heading); font-size:1.1rem;">ORO DISPONIBLE:</span>
+          <span style="font-family:var(--font-heading); font-size:1.4rem; font-weight:bold;" id="wiz-gold-display">0 mo</span>
+        </div>
+        <div id="wiz-shop-container" style="max-height:350px; overflow-y:auto; border:2px solid #ccc; padding:5px; background:#fafafa;"></div>
+        <div class="mt-5 text-center">
+          <p class="italic" style="font-size:0.8rem; margin:0 0 10px 0;">(Puedes comprar más adelante desde la ficha)</p>
+          <button type="button" class="btn-rest" style="width:100%; background:#000; color:#fff; padding:12px; font-size:1.2rem; box-shadow: 0 4px 0 #333;" onclick="finishWizard()">¡FINALIZAR Y JUGAR!</button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="sheet" id="main-sheet" style="display:none;">
+    <!-- HEADER -->
+    <div class="title-logo">OLD-SCHOOL ESSENTIALS</div>
+    <div class="subtitle-logo" id="sheet-subtitle">HOJA DE PERSONAJE — GUERRERO</div>
+
+    <div class="header-fields">
+      <div class="field-box"><div class="field-label">Nombre</div><div class="field-input"><input type="text" id="char-name"></div></div>
+      <div class="field-box"><div class="field-label">Título</div><div class="field-input"><input type="text" id="char-title"></div></div>
+      <div class="field-box">
+        <div class="field-label">Clase</div>
+        <div class="field-input">
+          <select id="char-class" onchange="runAutoCalculations(true);">
+            <option value="guerrero" selected>Guerrero</option>
+            <option value="clerigo">Clérigo</option>
+            <option value="enano">Enano</option>
+            <option value="elfo">Elfo</option>
+            <option value="mediano">Mediano</option>
+            <option value="ladron">Ladrón</option>
+            <option value="mago">Mago</option>
+          </select>
+        </div>
+      </div>
+      <div class="field-box"><div class="field-label">Raza</div><div class="field-input"><input type="text" id="char-race" value="Humano" readonly style="font-weight:bold;"></div></div>
+      <div class="field-box">
+        <div class="field-label">Nivel</div>
+        <div class="field-input" style="position:relative;">
+          <select id="char-level" onchange="onLevelDropdownChange()" disabled style="width:100%;"></select>
+          <div id="level-lock-overlay" onclick="checkLevelAccess()" style="position:absolute; top:0; left:0; right:0; bottom:0; cursor:pointer; z-index:10;"></div>
+        </div>
+      </div>
+      <div class="field-box"><div class="field-label">Alin.</div><div class="field-input">
+          <select id="char-align" onchange="onAlignmentChange()">
+            <option value="Legal">Legal</option><option value="Neutral" selected>Neutral</option><option value="Caótico">Caótico</option>
+          </select>
+      </div></div>
+    </div>
+
+    <!-- ================= PÁGINA 1 ================= -->
+    <div class="print-page-1-grid">
+      
+      <!-- COLUMNA IZQUIERDA -->
+      <div class="print-col-left">
+        <div class="flex justify-between align-center mb-5 mt-5">
+          <h2 style="margin:0;">Características</h2>
+          <div id="stats-action-container" class="flex gap-5 align-center">
+            <button type="button" id="btn-auto-3d6" class="btn-action clickable" style="font-size:0.85rem;" onclick="randomizeStats()">AUTO 3d6</button>
+            <button type="button" id="btn-accept-stats" class="btn-action clickable" style="font-size:0.85rem; background:#000; color:#fff;" onclick="acceptStats()">ACEPTAR</button>
+          </div>
+          <input type="hidden" id="stats-fixed" value="false">
+        </div>
+        <div class="flex-col">
+          <div class="stat-row"><div class="stat-box clickable" onclick="initRoll('stat', 'stat-fue', 'Fuerza')">FUE</div><div class="stat-input"><input type="number" id="stat-fue" value="10" min="3" max="18" oninput="runAutoCalculations(false)"></div><div class="stat-desc"><span id="desc-fue">Ataque/daño melé, Abrir puertas</span></div></div>
+          <div class="stat-row"><div class="stat-box clickable" onclick="initRoll('stat', 'stat-int', 'Inteligencia')">INT</div><div class="stat-input"><input type="number" id="stat-int" value="10" min="3" max="18" oninput="runAutoCalculations(false)"></div><div class="stat-desc"><span id="desc-int">Idiomas, Alfabetización</span></div></div>
+          <div class="stat-row"><div class="stat-box clickable" onclick="initRoll('stat', 'stat-sab', 'Sabiduría')">SAB</div><div class="stat-input"><input type="number" id="stat-sab" value="10" min="3" max="18" oninput="runAutoCalculations(false)"></div><div class="stat-desc"><span id="desc-wis">Salvación vs magia</span></div></div>
+          <div class="stat-row"><div class="stat-box clickable" onclick="initRoll('stat', 'stat-des', 'Destreza')">DES</div><div class="stat-input"><input type="number" id="stat-des" value="10" min="3" max="18" oninput="runAutoCalculations(false)"></div><div class="stat-desc"><span id="desc-des">Atq. proyectiles, CA, Iniciativa</span></div></div>
+          <div class="stat-row"><div class="stat-box clickable" onclick="initRoll('stat', 'stat-con', 'Constitución')">CON</div><div class="stat-input"><input type="number" id="stat-con" value="10" min="3" max="18" oninput="runAutoCalculations(false)"></div><div class="stat-desc"><span id="desc-con">Puntos de golpe</span></div></div>
+          <div class="stat-row"><div class="stat-box clickable" onclick="initRoll('stat', 'stat-car', 'Carisma')">CAR</div><div class="stat-input"><input type="number" id="stat-car" value="10" min="3" max="18" oninput="runAutoCalculations(false)"></div><div class="stat-desc"><span>Reacciones, Nº Ayudantes, Lealtad</span></div></div>
+          <div style="font-size:0.75rem; font-style:italic; margin-top:2px;" class="bold">Prueba: Tirar &le; valor en 1d20</div>
+        </div>
+
+        <h2>Combate</h2>
+        
+        <div id="active-effects-container" style="background:#fafafa; border:2px solid var(--border-color); padding:4px 6px; margin-bottom:6px; border-radius:2px;">
+          <div class="flex justify-between align-center mb-5">
+            <span style="font-family:var(--font-heading); font-weight:bold; font-size:0.85rem;">EFECTOS TEMPORALES:</span>
+            <button type="button" class="btn-action clickable" style="font-size:0.75rem;" onclick="openAddEffectModal()">+ AÑADIR EFECTO</button>
+          </div>
+          <div id="active-effects-list" class="flex flex-wrap gap-5">
+            <span id="no-effects-msg" style="font-size:0.75rem; font-style:italic; color:#666;">Ningún efecto activo</span>
+          </div>
+        </div>
+
+        <!-- BOX PG -->
+        <div class="flex-col border mb-5" style="padding:5px; background:#fafafa;">
+          <div class="flex gap-10 align-center">
+            <div class="stat-box" style="height:55px; width:42px; font-size:1.25rem;">PG</div>
+            <div style="width:65px; height:55px;">
+              <input type="number" id="hp-current" value="0" min="0" oninput="validateHP()" style="font-size:2.2rem; text-align:center; height:100%; font-weight:bold; border-bottom:2px solid var(--border-color);">
+            </div>
+            <div class="flex-col gap-4" style="flex:1;">
+              <div class="flex align-center gap-5">
+                <div class="stat-box clickable" style="height:24px; width:34px; font-size:0.8rem" onclick="healFull()" title="Recuperar todos los PG al máximo">Máx</div>
+                <div class="stat-input" style="height:24px; width:40px;"><input type="number" id="hp-max" value="0" min="0" oninput="validateHP(true)"></div>
+                <div class="italic" style="font-size:0.7rem; line-height:1; flex:1">Puntos de golpe máx.</div>
+              </div>
+              <div class="flex align-center gap-5">
+                <div class="stat-box" style="height:24px; width:34px; font-size:1.1rem">±</div>
+                <div class="stat-input" style="height:24px; width:40px;"><input type="text" id="mod-con-hp" readonly style="font-weight:bold;"></div>
+                <div class="italic" style="font-size:0.7rem; line-height:1; flex:1">Mod. CON aplicado</div>
+              </div>
+            </div>
+          </div>
+          <div class="flex justify-between align-center mt-5" style="border-top:1px solid #ccc; padding-top:4px;">
+            <div class="flex align-center gap-5"><button type="button" class="btn-rest" onclick="restHeal()" title="Curar 1d3, restablecer conjuros y revisar PX">DESCANSO</button></div>
+            <div class="flex gap-5">
+              <input type="hidden" id="initial-hp-rolled" value="false">
+              <button type="button" class="hp-btn" onclick="alterHP(-5)">-5</button>
+              <button type="button" class="hp-btn" onclick="alterHP(-1)">-1</button>
+              <button type="button" class="hp-btn" onclick="alterHP(1)">+1</button>
+              <button type="button" class="hp-btn" onclick="alterHP(5)">+5</button>
+              <button type="button" class="hp-btn clickable" onclick="healFull()" title="Recuperar todos los PG al máximo">MAX</button>
+              <button type="button" id="btn-roll-hp" class="hp-btn clickable" onclick="rollHP()" title="Simular tirada completa de DG">TIRAR DG</button>
+            </div>
+          </div>
+          
+          <div id="thrown-recovery-banner" style="display:none; background:#fff3cd; border:2px solid #ffeeba; color:#856404; padding:6px; margin-top:6px; border-radius:2px;" class="flex-col gap-4">
+            <div class="flex justify-between align-center" style="border-bottom:1px solid #e0d090; padding-bottom:3px;">
+              <span style="font-family:var(--font-heading); font-weight:bold; font-size:0.8rem;">ARMAS EN EL SUELO</span>
+            </div>
+            <div id="thrown-items-list" class="flex flex-col gap-4"></div>
+            <div class="flex justify-between gap-4 mt-5" style="border-top:1px solid #e0d090; padding-top:4px;">
+              <button type="button" class="btn-action clickable" style="font-size:0.75rem; background:#856404; color:#fff; flex:1; justify-content:center;" onclick="recoverAllThrownWeapons()">RECOGER TODO</button>
+              <button type="button" class="btn-action clickable btn-danger" style="font-size:0.75rem; flex:1; justify-content:center;" onclick="discardAllThrownWeapons()">DESCARTAR TODO</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- BOX CA -->
+        <div class="flex-col border mb-5" style="padding:5px; background:#fafafa;">
+          <div class="flex justify-between align-center mb-5" style="border-bottom:1px solid #ccc; padding-bottom:3px;">
+            <span class="bold" style="font-family:var(--font-heading); font-size:0.85rem;">SISTEMA DE CA:</span>
+            <select id="ac-system" onchange="calculateArmorClass()" style="border:1px solid black; background:white; font-size:0.8rem; padding:1px; width:auto;">
+              <option value="asc" selected>CA Ascendente (CAA)</option><option value="desc">CA Descendente (CAD)</option>
+            </select>
+          </div>
+          <div class="flex gap-10 align-center">
+            <div class="stat-box" style="height:55px; width:42px; font-size:1.25rem;">CA</div>
+            <div style="width:65px; height:55px;"><input type="number" id="combat-ac" value="10" readonly style="font-size:2.2rem; text-align:center; height:100%; font-weight:bold; border-bottom:2px solid var(--border-color);"></div>
+            <div class="flex-col gap-4" style="flex:1;">
+              <div class="flex align-center gap-5"><div class="stat-box" style="height:24px; width:34px; font-size:0.8rem">Sin</div><div class="stat-input" style="height:24px; width:40px;"><input type="number" id="combat-ac-unarmored" value="10" readonly></div><div class="italic" id="desc-unarmored-label" style="font-size:0.7rem; line-height:1; flex:1">Sin armadura: 10 + DES</div></div>
+              <div class="flex align-center gap-5"><div class="stat-box" style="height:24px; width:34px; font-size:1.1rem">±</div><div class="stat-input" style="height:24px; width:40px;"><input type="text" id="mod-dex-ac" readonly style="font-weight:bold;"></div><div class="italic" id="desc-ca-mod" style="font-size:0.7rem; line-height:1; flex:1">Mod. DES a CA</div></div>
+            </div>
+          </div>
+          <div class="flex justify-between align-center mt-5" style="border-top:1px solid #ccc; padding-top:4px;">
+            <div class="flex align-center gap-5" style="flex:1;">
+              <span class="bold" style="font-size:0.75rem; font-family:var(--font-heading);">ARMADURA:</span>
+              <select id="select-armor" onchange="calculateArmorClass()" style="border:1px solid black; background:white; font-size:0.8rem; padding:1px;">
+                <option value="none">Ninguna (CA 10)</option>
+              </select>
+            </div>
+            <label class="flex align-center gap-5" style="cursor:pointer; margin-left:6px;">
+              <span class="bold" id="label-shield-bonus" style="font-size:0.75rem; font-family:var(--font-heading);">ESCUDO (+1):</span>
+              <input type="checkbox" id="check-shield" onchange="calculateArmorClass()" style="width:16px; height:16px;">
+            </label>
+          </div>
+        </div>
+
+        <!-- BOX INICIATIVA -->
+        <div class="flex justify-between align-center border mb-5 mt-5" style="padding:4px 6px; background:#fafafa;">
+          <div class="flex align-center gap-5"><span class="bold" style="font-family:var(--font-heading); font-size:1rem; margin-right:4px;">INICIATIVA:</span><button type="button" class="btn-action clickable" style="font-size:0.85rem;" onclick="initRoll('initiative', null, 'Iniciativa')">TIRAR 1d6</button></div>
+          <label class="flex align-center gap-5" style="cursor:pointer; margin-left:8px;"><span class="bold" style="font-size:0.75rem; font-family:var(--font-heading);">+ MOD. DES</span><input type="checkbox" id="init-dex-mod" style="width:16px; height:16px;"></label>
+        </div>
+
+        <h2>Tiradas de Ataque</h2>
+        <div class="flex gap-4 mb-4">
+          <div class="flex-col flex" style="flex:1; border:2px solid var(--border-color)"><div class="matrix-header-box clickable" onclick="initRoll('attack', 'melee', 'Ataque Melé')">MELÉ</div>
+            <select id="melee-weapon-select" style="text-align:center; font-size:0.8rem; border-bottom:1px solid #ccc; padding:1px 0; background:#f9f9f9;">
+              <option value="2">Desarmado (1d2)</option>
+            </select>
+            <input type="text" id="attack-melee" readonly class="clickable" onclick="initRoll('attack', 'melee', 'Ataque Melé')" style="height:28px; text-align:center; font-size:1.15rem; font-weight:bold;">
+          </div>
+          <div class="flex-col flex" style="flex:1; border:2px solid var(--border-color)"><div class="matrix-header-box clickable" onclick="initRoll('attack', 'missile', 'Ataque Proyectiles')">PROY</div>
+            <select id="missile-weapon-select" style="text-align:center; font-size:0.8rem; border-bottom:1px solid #ccc; padding:1px 0; background:#f9f9f9;">
+              <option value="0">Sin armas a distancia (0)</option>
+            </select>
+            <input type="text" id="attack-missile" readonly class="clickable" onclick="initRoll('attack', 'missile', 'Ataque Proyectiles')" style="height:28px; text-align:center; font-size:1.15rem; font-weight:bold;">
+          </div>
+          <div class="flex-col flex" style="flex:1; border:2px solid var(--border-color); justify-content:space-between;"><div class="matrix-header-box">BA</div><input type="text" id="attack-ba" readonly style="height:28px; text-align:center; font-size:1.15rem; font-weight:bold; margin-bottom:3px;"></div>
+        </div>
+        <div class="combat-matrix">
+          <div class="matrix-col"><div class="matrix-header-box">9</div><input type="text" id="matrix-9" readonly></div><div class="matrix-col"><div class="matrix-header-box">8</div><input type="text" id="matrix-8" readonly></div>
+          <div class="matrix-col"><div class="matrix-header-box">7</div><input type="text" id="matrix-7" readonly></div><div class="matrix-col"><div class="matrix-header-box">6</div><input type="text" id="matrix-6" readonly></div>
+          <div class="matrix-col"><div class="matrix-header-box">5</div><input type="text" id="matrix-5" readonly></div><div class="matrix-col"><div class="matrix-header-box">4</div><input type="text" id="matrix-4" readonly></div>
+          <div class="matrix-col"><div class="matrix-header-box">3</div><input type="text" id="matrix-3" readonly></div><div class="matrix-col"><div class="matrix-header-box">2</div><input type="text" id="matrix-2" readonly></div>
+          <div class="matrix-col"><div class="matrix-header-box">1</div><input type="text" id="matrix-1" readonly></div><div class="matrix-col"><div class="matrix-header-box">0</div><input type="text" id="matrix-0" readonly></div>
+        </div>
+        <div class="flex justify-between align-center mt-5"><span class="italic" style="font-size:0.75rem;">CAD: Matriz de impacto</span><span style="font-family:var(--font-heading); font-size:1rem; font-weight:bold;">GAC0 <input type="number" id="combat-gac0" readonly style="width:36px; border-bottom:2px solid var(--border-color); text-align:center; font-weight:bold;"></span></div>
+      </div>
+
+      <!-- COLUMNA DERECHA -->
+      <div class="print-col-right">
+        <h2>Tiradas de Salvación</h2>
+        <div class="flex-col">
+          <div class="stat-row"><div class="stat-box clickable" onclick="initRoll('save', 'save-m', 'Salvación Muerte/Veneno')">M</div><div class="stat-input"><input type="number" id="save-m"></div><div class="stat-desc"><span>Muerte, veneno</span></div></div>
+          <div class="stat-row"><div class="stat-box clickable" onclick="initRoll('save', 'save-v', 'Salvación Varitas', true)">V</div><div class="stat-input"><input type="number" id="save-v"></div><div class="stat-desc"><span>Varitas mágicas</span></div></div>
+          <div class="stat-row"><div class="stat-box clickable" onclick="initRoll('save', 'save-p', 'Salvación Parálisis')">P</div><div class="stat-input"><input type="number" id="save-p"></div><div class="stat-desc"><span id="desc-save-p">Parálisis, petrificación</span></div></div>
+          <div class="stat-row"><div class="stat-box clickable" onclick="initRoll('save', 'save-a', 'Salvación Aliento')">A</div><div class="stat-input"><input type="number" id="save-a"></div><div class="stat-desc"><span>Ataques de aliento</span></div></div>
+          <div class="stat-row"><div class="stat-box clickable" onclick="initRoll('save', 'save-h', 'Salvación Hechizos', true)">H</div><div class="stat-input"><input type="number" id="save-h"></div><div class="stat-desc"><span>Hechizos, cetros, bastones</span></div></div>
+          <div class="stat-row"><div class="stat-box" style="font-size:1.3rem">±</div><div class="stat-input"><input type="text" id="mod-wis-save" readonly style="font-weight:bold;"></div><div class="stat-desc"><span>Mod. SAB (Varitas/Hechizos)</span></div></div>
+          <div style="font-size:0.75rem; font-style:italic; margin-top:2px;" class="bold">Salvación: Tirar &ge; valor en 1d20</div>
+        </div>
+
+        <div class="mt-10">
+          <h2>Movimiento</h2>
+          <div style="font-size:0.75rem; font-style:italic; margin-bottom:4px;">Calculado según sobrecarga:</div>
+          <div class="flex gap-5 mb-4 align-center mov-row"><div class="stat-box" style="height:30px; width:40px; font-size:0.85rem;">Via</div><div class="stat-input" style="height:30px; width:65px;"><input type="text" id="mov-overland" value="24 mi" readonly style="font-weight:bold;"></div><div class="italic" style="font-size:0.75rem; flex:1; line-height:1.1;">Viaje/Diario (millas/día)</div></div>
+          <div class="flex gap-5 mb-4 align-center mov-row"><div class="stat-box" style="height:30px; width:40px; font-size:0.85rem;">Exp</div><div class="stat-input" style="height:30px; width:65px;"><input type="text" id="mov-exploration" value="120'" readonly style="font-weight:bold;"></div><div class="italic" style="font-size:0.75rem; flex:1; line-height:1.1;">Exploración (pies/turno)</div></div>
+          <div class="flex gap-5 mb-5 align-center mov-row"><div class="stat-box" style="height:30px; width:40px; font-size:0.85rem;">Enc</div><div class="stat-input" style="height:30px; width:65px;"><input type="text" id="mov-encounter" value="40'" readonly style="font-weight:bold;"></div><div class="italic" style="font-size:0.75rem; flex:1; line-height:1.1;">Encuentro (pies/asalto)</div></div>
+        </div>
+
+        <div id="sec-general-skills">
+          <h2>Habilidades de Aventura</h2>
+          <div class="flex-col gap-4">
+            <div class="stat-row adventure-skill-row"><div class="stat-box clickable" style="font-size:1rem; width:32px; height:32px;" onclick="initRoll('skill','skill-rc-val','Recolectar')">RC</div><div class="stat-input input-with-label" style="height:32px; width:52px;"><input type="number" id="skill-rc-val" value="1"><span class="inner-label">-en-6</span></div><div class="stat-desc"><span>Recolectar naturaleza</span></div></div>
+            <div class="stat-row adventure-skill-row"><div class="stat-box clickable" style="font-size:1rem; width:32px; height:32px;" onclick="initRoll('skill','skill-et-val','Encontrar Trampas')">ET</div><div class="stat-input input-with-label" style="height:32px; width:52px;"><input type="number" id="skill-et-val" value="1"><span class="inner-label">-en-6</span></div><div class="stat-desc"><span id="desc-et">Encontrar trampa en sala</span></div></div>
+            <div class="stat-row adventure-skill-row"><div class="stat-box clickable" style="font-size:1rem; width:32px; height:32px;" onclick="initRoll('skill','skill-cz-val','Cazar')">CZ</div><div class="stat-input input-with-label" style="height:32px; width:52px;"><input type="number" id="skill-cz-val" value="1"><span class="inner-label">-en-6</span></div><div class="stat-desc"><span>Cazar naturaleza</span></div></div>
+            <div class="stat-row adventure-skill-row"><div class="stat-box clickable" style="font-size:1rem; width:32px; height:32px;" onclick="initRoll('skill','skill-ep-val','Escuchar Puerta')">EP</div><div class="stat-input input-with-label" style="height:32px; width:52px;"><input type="number" id="skill-ep-val" value="1"><span class="inner-label">-en-6</span></div><div class="stat-desc"><span>Escuchar puerta</span></div></div>
+            <div class="stat-row adventure-skill-row"><div class="stat-box clickable" style="font-size:1rem; width:32px; height:32px;" onclick="initRoll('skill','skill-aa-val','Abrir Puerta')">AA</div><div class="stat-input input-with-label" style="height:32px; width:52px;"><input type="number" id="skill-aa-val" value="2"><span class="inner-label">-en-6</span></div><div class="stat-desc"><span>Abrir puerta atascada</span></div></div>
+            <div class="stat-row adventure-skill-row"><div class="stat-box clickable" style="font-size:1rem; width:32px; height:32px;" onclick="initRoll('skill','skill-es-val','Encontrar Secreta')">ES</div><div class="stat-input input-with-label" style="height:32px; width:52px;"><input type="number" id="skill-es-val" value="1"><span class="inner-label">-en-6</span></div><div class="stat-desc"><span>Encontrar puerta secreta</span></div></div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- BASE PÁGINA 1: RASGOS DE CLASE E IDIOMAS -->
+    <div class="traits-lang-grid">
+      <div class="traits-box">
+        <h2 style="margin:0 0 4px 0;">Rasgos de Clase</h2>
+        <div id="trait-guerrero" class="trait-section"><div class="trait-card"><span class="trait-badge">ARMAS/ARMADURAS</span><div style="font-size:0.8rem;">Cualquiera.</div></div><div class="trait-card" style="margin-bottom:0;"><span class="trait-badge">FORTALEZA</span><div style="font-size:0.8rem;">Nivel 9 puede construir castillo.</div></div></div>
+        <div id="trait-clerigo" class="trait-section" style="display:none;"><div class="trait-card"><span class="trait-badge">ARMAS/ARMADURAS</span><div style="font-size:0.8rem;">Cualquier armadura/escudo. Solo armas contundentes.</div></div><div class="trait-card" style="margin-bottom:0;"><span class="trait-badge">MAGIA</span><div style="font-size:0.8rem;">Pide conjuros por oración.</div></div></div>
+        <div id="trait-enano" class="trait-section" style="display:none;"><div class="trait-card"><span class="trait-badge">ENANO</span><div style="font-size:0.8rem;">Infravisión 60'. <b>2 en 1d6</b> de detectar trampas/puertas.</div></div><div class="trait-card" style="margin-bottom:0;"><span class="trait-badge">RESISTENCIA</span><div style="font-size:0.8rem;">Excelentes salvaciones.</div></div></div>
+        <div id="trait-elfo" class="trait-section" style="display:none;"><div class="trait-card"><span class="trait-badge">ELFO</span><div style="font-size:0.8rem;">Infravisión 60'. Inmune a parálisis. Puertas (2 en 1d6).</div></div><div class="trait-card" style="margin-bottom:0;"><span class="trait-badge">MAGO GUERRERO</span><div style="font-size:0.8rem;">Usa cualquier armadura lanzando magia.</div></div></div>
+        <div id="trait-mediano" class="trait-section" style="display:none;"><div class="trait-card"><span class="trait-badge">MEDIANO</span><div style="font-size:0.8rem;">+1 proyectiles. -2 CA frente gigantes.</div></div><div class="trait-card" style="margin-bottom:0;"><span class="trait-badge">SIGILO</span><div style="font-size:0.8rem;">90% exteriores / 2 en 1d6 en mazmorras (inmóvil).</div></div></div>
+        <div id="trait-ladron" class="trait-section" style="display:none;"><div class="trait-card"><span class="trait-badge">LADRÓN</span><div style="font-size:0.8rem;">Solo armadura cuero.</div></div><div class="trait-card" style="margin-bottom:0;"><span class="trait-badge">GREMIO</span><div style="font-size:0.8rem;">Leer pergaminos (Nivel 10+).</div></div></div>
+        <div id="trait-mago" class="trait-section" style="display:none;"><div class="trait-card"><span class="trait-badge">MAGO</span><div style="font-size:0.8rem;">Ninguna armadura/escudo. Dagas/bastones.</div></div><div class="trait-card" style="margin-bottom:0;"><span class="trait-badge">ALTA MAGIA</span><div style="font-size:0.8rem;">Creación de objetos (Nivel 11+).</div></div></div>
+      </div>
+
+      <div class="lang-box">
+        <div class="flex justify-between align-center mb-4">
+          <h2 style="margin:0;">Idiomas</h2>
+          <button type="button" id="btn-choose-languages" class="btn-action clickable" style="font-size:0.75rem;" onclick="openLanguageModal()">+ ELEGIR IDIOMAS</button>
+        </div>
+        <div class="flex flex-col gap-4" style="flex:1;">
+          <span id="lang-literacy-badge" class="trait-badge" style="margin:0; font-size:0.75rem; background:#000; color:#fff; align-self:flex-start;">INSTRUÍDO</span>
+          <textarea id="char-languages" class="notes-area" style="min-height:55px; font-size:0.88rem; flex:1;" placeholder="Común, Alineamiento..." oninput="autoSave()"></textarea>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================= PÁGINA 2 ================= -->
+    <div class="page-break">PÁGINA 2: MAGIA, EQUIPO Y EXPERIENCIA</div>
+
+    <div class="print-page-2-grid">
+      
+      <!-- SECCIONES DE MAGIA / CLASE -->
+      <div id="sec-thief" style="display:none; margin-top:6px;">
+        <h2>Habilidades de Ladrón</h2>
+        <div class="flex-col gap-4">
+          <div class="stat-row"><div class="stat-box clickable" style="font-size:1rem; width:36px; height:32px;" onclick="initRoll('thief','thief-ac','Abrir Cerraduras')">AC</div><div class="input-percent"><input type="number" id="thief-ac"><span class="percent-symbol">%</span></div><div class="stat-desc"><span><b>Abrir cerraduras</b> (1 turno)</span></div></div>
+          <div class="stat-row"><div class="stat-box clickable" style="font-size:1rem; width:36px; height:32px;" onclick="initRoll('thief','thief-et','Encontrar/Retirar Trampas')">ET</div><div class="input-percent"><input type="number" id="thief-et"><span class="percent-symbol">%</span></div><div class="stat-desc"><span><b>Encontrar/Retirar trampas</b> (1 turno)</span></div></div>
+          <div class="stat-row"><div class="stat-box clickable" style="font-size:1rem; width:36px; height:32px;" onclick="initRoll('thief','thief-rb','Robar Bolsillos')">RB</div><div class="input-percent"><input type="number" id="thief-rb"><span class="percent-symbol">%</span></div><div class="stat-desc"><span><b>Robar bolsillos / Hurtar</b></span></div></div>
+          <div class="stat-row"><div class="stat-box clickable" style="font-size:1rem; width:36px; height:32px;" onclick="initRoll('thief','thief-ms','Moverse en Silencio')">MS</div><div class="input-percent"><input type="number" id="thief-ms"><span class="percent-symbol">%</span></div><div class="stat-desc"><span><b>Moverse en silencio</b></span></div></div>
+          <div class="stat-row"><div class="stat-box clickable" style="font-size:1rem; width:36px; height:32px;" onclick="initRoll('thief','thief-es','Esconderse')">ES</div><div class="input-percent"><input type="number" id="thief-es"><span class="percent-symbol">%</span></div><div class="stat-desc"><span><b>Esconderse en las sombras</b></span></div></div>
+          <div class="stat-row"><div class="stat-box clickable" style="font-size:1rem; width:36px; height:32px;" onclick="initRoll('thief','thief-em','Escalar Muros')">EM</div><div class="input-percent"><input type="number" id="thief-em"><span class="percent-symbol">%</span></div><div class="stat-desc"><span><b>Escalar muros</b></span></div></div>
+          <div class="stat-row"><div class="stat-box clickable" style="font-size:1rem; width:36px; height:32px;" onclick="initRoll('thief','thief-er','Escuchar Ruidos')">ER</div><div class="input-percent"><input type="number" id="thief-er"><span class="percent-symbol">%</span></div><div class="stat-desc"><span><b>Escuchar ruidos</b></span></div></div>
+          <div class="border mt-4" style="padding:4px; background-color:#fafafa;">
+            <div class="flex align-center justify-between"><span style="font-family:var(--font-heading); font-size:1rem; font-weight:bold;">APUÑALAR (Por la espalda)</span><button type="button" class="btn-action clickable" style="font-size:0.8rem;" onclick="initRoll('backstab', null, 'Ataque por la Espalda')">TIRAR (+4)</button></div>
+            <div class="flex align-center gap-5 mt-4"><span class="italic" style="font-size:0.75rem; flex:1;">Multiplicador Daño/Sorpresa:</span><input type="text" id="thief-backstab" value="x2 Daño" style="width:75px; border-bottom:2px solid black; text-align:center; font-weight:bold; font-family:var(--font-heading);"></div>
+          </div>
+        </div>
+      </div>
+
+      <div id="sec-turn-undead" style="display:none; margin-top:6px;">
+        <div class="flex align-center justify-between mb-4"><h2 style="margin:0;">Expulsar Muertos</h2><button type="button" class="btn-action clickable" style="font-size:0.8rem;" onclick="initRoll('turn_undead', null, 'Expulsar Muertos')">TIRAR 2d6</button></div>
+        <div style="font-size:0.75rem; font-style:italic; line-height:1.1; margin-bottom:4px;">Lanza 2d6 y evalúa la tabla calculando a qué criaturas afecta.</div>
+        <table class="turn-table">
+          <tr><th>Esq</th><th>Zom</th><th>Nec</th><th>Esp</th><th>Apa</th><th>Mom</th><th>Alb</th><th>Vam</th></tr>
+          <tr>
+            <td id="turn-cell-1"><input type="text" id="turn-1" value="7" readonly></td><td id="turn-cell-2"><input type="text" id="turn-2" value="9" readonly></td><td id="turn-cell-3"><input type="text" id="turn-3" value="11" readonly></td><td id="turn-cell-4"><input type="text" id="turn-4" value="—" readonly></td>
+            <td id="turn-cell-5"><input type="text" id="turn-5" value="—" readonly></td><td id="turn-cell-6"><input type="text" id="turn-6" value="—" readonly></td><td id="turn-cell-7"><input type="text" id="turn-7" value="—" readonly></td><td id="turn-cell-8"><input type="text" id="turn-8" value="—" readonly></td>
+          </tr>
+        </table>
+      </div>
+
+      <!-- MAGIA ARCANA -->
+      <div id="sec-arcane-spells" style="display:none; margin-top:6px;">
+        <h2>Magia Arcana</h2>
+        <div style="font-size:0.75rem; font-style:italic; line-height:1.1;">Espacios de conjuro memorizables por día:</div>
+        <div class="spell-slots-grid">
+          <div class="slot-card"><div class="slot-header">NV 1</div><input type="number" id="arcane-slot-1" placeholder="0"></div><div class="slot-card"><div class="slot-header">NV 2</div><input type="number" id="arcane-slot-2" placeholder="0"></div>
+          <div class="slot-card"><div class="slot-header">NV 3</div><input type="number" id="arcane-slot-3" placeholder="0"></div><div class="slot-card"><div class="slot-header">NV 4</div><input type="number" id="arcane-slot-4" placeholder="0"></div>
+          <div class="slot-card"><div class="slot-header">NV 5</div><input type="number" id="arcane-slot-5" placeholder="0"></div><div class="slot-card" id="slot-card-arcane-6"><div class="slot-header">NV 6</div><input type="number" id="arcane-slot-6" placeholder="0"></div>
+        </div>
+        <div class="flex justify-between align-center mt-5"><span class="bold" style="font-family:var(--font-heading); font-size:1rem;">GRIMORIO</span><a href="https://logoff.github.io/ose-srd-es/14_hechizos_de_mago/00_lista/" target="_blank" class="srd-link">LISTA SRD ↗</a></div>
+        <div class="spell-level-block"><div class="spell-level-header"><h3>Nivel 1</h3><button type="button" class="btn-action" onclick="openSpellModal('mago',1)">+ Añadir</button></div><div id="arcane-list-1" class="flex-col gap-4"></div></div>
+        <div class="spell-level-block"><div class="spell-level-header"><h3>Nivel 2</h3><button type="button" class="btn-action" onclick="openSpellModal('mago',2)">+ Añadir</button></div><div id="arcane-list-2" class="flex-col gap-4"></div></div>
+        <div class="spell-level-block"><div class="spell-level-header"><h3>Nivel 3</h3><button type="button" class="btn-action" onclick="openSpellModal('mago',3)">+ Añadir</button></div><div id="arcane-list-3" class="flex-col gap-4"></div></div>
+        <div class="spell-level-block"><div class="spell-level-header"><h3>Nivel 4</h3><button type="button" class="btn-action" onclick="openSpellModal('mago',4)">+ Añadir</button></div><div id="arcane-list-4" class="flex-col gap-4"></div></div>
+        <div class="spell-level-block"><div class="spell-level-header"><h3>Nivel 5</h3><button type="button" class="btn-action" onclick="openSpellModal('mago',5)">+ Añadir</button></div><div id="arcane-list-5" class="flex-col gap-4"></div></div>
+        <div class="spell-level-block" id="block-arcane-6"><div class="spell-level-header"><h3>Nivel 6</h3><button type="button" class="btn-action" onclick="openSpellModal('mago',6)">+ Añadir</button></div><div id="arcane-list-6" class="flex-col gap-4"></div></div>
+      </div>
+
+      <!-- MAGIA DIVINA -->
+      <div id="sec-divine-spells" style="display:none; margin-top:6px;">
+        <h2>Magia Divina</h2>
+        <div style="font-size:0.75rem; font-style:italic; line-height:1.1;">Espacios de conjuro otorgados por la deidad:</div>
+        <div class="spell-slots-grid" style="grid-template-columns:repeat(5, 1fr);">
+          <div class="slot-card"><div class="slot-header">NV 1</div><input type="number" id="divine-slot-1" placeholder="0"></div><div class="slot-card"><div class="slot-header">NV 2</div><input type="number" id="divine-slot-2" placeholder="0"></div>
+          <div class="slot-card"><div class="slot-header">NV 3</div><input type="number" id="divine-slot-3" placeholder="0"></div><div class="slot-card"><div class="slot-header">NV 4</div><input type="number" id="divine-slot-4" placeholder="0"></div>
+          <div class="slot-card"><div class="slot-header">NV 5</div><input type="number" id="divine-slot-5" placeholder="0"></div>
+        </div>
+        <div class="flex justify-between align-center mt-5"><span class="bold" style="font-family:var(--font-heading); font-size:1rem;">CONJUROS PREPARADOS</span><a href="https://logoff.github.io/ose-srd-es/13_hechizos_de_clerigo/00_lista/" target="_blank" class="srd-link">LISTA SRD ↗</a></div>
+        <div class="spell-level-block"><div class="spell-level-header"><h3>Nivel 1</h3><button type="button" class="btn-action" onclick="openSpellModal('clerigo',1)">+ Añadir</button></div><div id="divine-list-1" class="flex-col gap-4"></div></div>
+        <div class="spell-level-block"><div class="spell-level-header"><h3>Nivel 2</h3><button type="button" class="btn-action" onclick="openSpellModal('clerigo',2)">+ Añadir</button></div><div id="divine-list-2" class="flex-col gap-4"></div></div>
+        <div class="spell-level-block"><div class="spell-level-header"><h3>Nivel 3</h3><button type="button" class="btn-action" onclick="openSpellModal('clerigo',3)">+ Añadir</button></div><div id="divine-list-3" class="flex-col gap-4"></div></div>
+        <div class="spell-level-block"><div class="spell-level-header"><h3>Nivel 4</h3><button type="button" class="btn-action" onclick="openSpellModal('clerigo',4)">+ Añadir</button></div><div id="divine-list-4" class="flex-col gap-4"></div></div>
+        <div class="spell-level-block"><div class="spell-level-header"><h3>Nivel 5</h3><button type="button" class="btn-action" onclick="openSpellModal('clerigo',5)">+ Añadir</button></div><div id="divine-list-5" class="flex-col gap-4"></div></div>
+      </div>
+
+      <!-- SOBRECARGA, TESORO, EQUIPO -->
+      <h2>Sobrecarga y Peso Total</h2>
+      <div style="font-size:0.75rem; font-style:italic; line-height:1.1;">El peso se mide en monedas (mo). 10 monedas = 1 mo de peso.</div>
+      <div class="encumbrance-bar">
+        <div class="enc-bracket active" id="bracket-120">0-400 mo<br><b>120' (40')</b></div><div class="enc-bracket" id="bracket-90">401-600 mo<br><b>90' (30')</b></div>
+        <div class="enc-bracket" id="bracket-60">601-800 mo<br><b>60' (20')</b></div><div class="enc-bracket" id="bracket-30">801-1600 mo<br><b>30' (10')</b></div>
+      </div>
+      <div class="flex justify-between align-center border mt-4" style="padding:4px 6px; background:#fafafa;">
+        <span style="font-family:var(--font-heading); font-size:1rem; font-weight:bold;">PESO TOTAL:</span><span style="font-family:var(--font-heading); font-size:1.15rem; font-weight:bold;" id="total-weight-display">0 mo</span>
+      </div>
+
+      <div class="flex justify-between align-center mt-5">
+        <h3 style="margin:0;">Tesoro</h3>
+        <input type="hidden" id="initial-gold-rolled" value="false">
+        <button type="button" id="btn-initial-gold" class="btn-action clickable" style="font-size:0.75rem;" onclick="rollInitialGold()">ORO INICIAL (3d6x10)</button>
+      </div>
+      <div class="grid" style="grid-template-columns: repeat(5, 1fr); gap:3px; margin-top:3px; display: grid;">
+        <div class="border text-center" style="padding:2px;"><span style="font-size:0.7rem; font-weight:bold;">Plat (mp)</span><input type="number" id="coin-mp" value="0" oninput="calculateEncumbrance()" style="text-align:center;"></div>
+        <div class="border text-center" style="padding:2px;"><span style="font-size:0.7rem; font-weight:bold;">Oro (mo)</span><input type="number" id="coin-mo" value="0" oninput="calculateEncumbrance()" style="text-align:center;"></div>
+        <div class="border text-center" style="padding:2px;"><span style="font-size:0.7rem; font-weight:bold;">Elec (me)</span><input type="number" id="coin-me" value="0" oninput="calculateEncumbrance()" style="text-align:center;"></div>
+        <div class="border text-center" style="padding:2px;"><span style="font-size:0.7rem; font-weight:bold;">Plata (ml)</span><input type="number" id="coin-ml" value="0" oninput="calculateEncumbrance()" style="text-align:center;"></div>
+        <div class="border text-center" style="padding:2px;"><span style="font-size:0.7rem; font-weight:bold;">Cobre (mc)</span><input type="number" id="coin-mc" value="0" oninput="calculateEncumbrance()" style="text-align:center;"></div>
+      </div>
+
+      <div class="flex justify-between align-center mt-5">
+        <h3>Inventario y Equipo</h3>
+        <div class="flex gap-4"><button type="button" class="btn-action" onclick="openShop()">+ Tienda</button><button type="button" class="btn-action" onclick="addEquipmentRow('', 0)">+ Añadir Objeto</button></div>
+      </div>
+      
+      <div class="border mt-4" style="padding:5px;">
+        <div class="flex justify-between italic" style="font-size:0.75rem; border-bottom:1px solid black; padding-bottom:2px;"><span>Descripción del objeto</span><span style="width:60px; text-align:center;">Peso (mo)</span></div>
+        <div id="equipment-items-list" class="flex-col gap-4 mt-4"></div>
+      </div>
+
+      <h2 class="mt-5">Otras Notas y Aventuras</h2>
+      <div class="box-container"><textarea class="notes-area" id="notes-main" style="min-height:95px;" placeholder="Grimorio, gemas, seguidores, pistas..."></textarea></div>
+
+      <div class="mt-5 border" style="padding:6px;">
+        <div class="flex justify-between align-center mb-5" style="border-bottom:1px solid #aaa; padding-bottom:3px;">
+          <h3 style="margin:0;">Experiencia</h3><span class="trait-badge" style="margin:0; font-size:0.75rem;" id="xp-mod-badge">BONO PX: +0%</span>
+        </div>
+        <div class="flex align-center gap-5 mb-5">
+          <div class="flex-col" style="flex:1;">
+            <span class="italic" style="font-size:0.7rem;">PX a cobrar</span>
+            <div class="flex align-center gap-4">
+              <input type="number" id="xp-session" placeholder="0" style="font-size:1.1rem; font-weight:bold; border:2px solid var(--border-color); text-align:center; height:30px;">
+              <button type="button" class="hp-btn" style="height:30px; width:50px; font-size:0.75rem; padding:0;" onclick="manualApplySessionXP()">COBRAR</button>
+            </div>
+          </div>
+          <div class="flex-col" style="flex:1;">
+            <span class="italic" style="font-size:0.7rem;">PX Totales</span>
+            <input type="number" id="char-xp" placeholder="PX" onchange="validateXP()" style="font-size:1.15rem; font-weight:bold; border:2px solid var(--border-color); text-align:center; height:30px;">
+          </div>
+        </div>
+        <div class="flex align-center gap-5">
+          <div class="stat-box" style="height:30px; width:45px; font-size:0.9rem">Sig.</div>
+          <div class="stat-input" style="flex:1; height:30px;"><input type="text" id="xp-next-level" readonly style="font-size:1rem; font-weight:bold;"></div>
+          <button type="button" class="hp-btn clickable" style="font-size:0.8rem; height:30px; padding:0 6px;" onclick="levelUp()" title="Forzar subida de nivel">+LVL</button>
+        </div>
+      </div>
+      
+      <!-- BOTONES DE ACCIÓN INFERIORES -->
+      <div class="bottom-actions-container">
+        <div class="flex justify-center gap-10">
+          <button type="button" class="btn-rest" style="background:#000;" onclick="openExportModal()">EXPORTAR FICHA</button>
+          <button type="button" class="btn-rest" style="background:#444;" onclick="document.getElementById('import-file').click()">IMPORTAR FICHA</button>
+          <input type="file" id="import-file" style="display:none;" accept=".json" onchange="importData(event)">
+        </div>
+        <div class="flex justify-center">
+          <button type="button" class="btn-rest btn-danger" onclick="resetSheet()">NUEVA FICHA (BORRAR)</button>
+        </div>
+      </div>
+
+    </div>
+
+    <div style="text-align: center; font-size: 0.7rem; margin-top: 10px; color: #555;">© 2026 Necrotic Gnome — OSE Ficha Universal Automatizada (Español)</div>
+  </div>
+
+  <!-- MODAL DE EXPORTACIÓN -->
+  <div id="export-modal" class="modal-overlay">
+    <div class="modal-content" style="max-width:340px;">
+      <div class="modal-header">
+        <h3 style="color:white; margin:0; letter-spacing:1px;">EXPORTAR PERSONAJE</h3>
+        <button type="button" class="btn-delete" onclick="closeExportModal()">✕</button>
+      </div>
+      <div class="modal-body" style="padding:16px; gap:10px;">
+        <p style="font-size:0.85rem; margin:0 0 6px 0; font-style:italic; text-align:center;">Elige el formato de salida:</p>
+        
+        <button type="button" class="chip-btn chip-btn-dark" onclick="triggerPrint()">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M19 8H5c-1.66 0-3 1.34-3 3v6h4v4h12v-4h4v-6c0-1.66-1.34-3-3-3zm-3 11H8v-5h8v5zm3-7c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1zm-1-9H6v4h12V3z"/></svg>
+          <span>IMPRIMIR FICHA (A4)</span>
+        </button>
+        
+        <button type="button" class="chip-btn" onclick="triggerPDF()">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M20 2H8c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-8.5 7.5c0 .83-.67 1.5-1.5 1.5H9v2H7.5V7H10c.83 0 1.5.67 1.5 1.5v1zm5 2c0 .83-.67 1.5-1.5 1.5h-2.5V7H15c.83 0 1.5.67 1.5 1.5v3zm4-3H19v1h1.5V11H19v2h-1.5V7h3v1.5zM9 9.5h1v-1H9v1zM4 6H2v14c0 1.1.9 2 2 2h14v-2H4V6zm10 5.5h1v-3h-1v3z"/></svg>
+          <span>GUARDAR EN PDF</span>
+        </button>
+        
+        <button type="button" class="chip-btn" onclick="triggerJSON()">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M17 3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V7l-4-4zm-5 16c-1.66 0-3-1.34-3-3s1.34-3 3-3 3 1.34 3 3-1.34 3-3 3zm3-10H5V5h10v4z"/></svg>
+          <span>GUARDAR EN JSON</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL DE IDIOMAS (SRD OSE) -->
+  <div id="language-modal" class="modal-overlay">
+    <div class="modal-content" style="max-width:380px; max-height:85vh;">
+      <div class="modal-header">
+        <h3 style="color:white; margin:0; letter-spacing:1px;">IDIOMAS (SRD OSE)</h3>
+        <button type="button" class="btn-delete" onclick="closeLanguageModal()">✕</button>
+      </div>
+      <div class="modal-body" style="padding:15px; gap:8px;">
+        <div id="lang-modal-info" style="font-size:0.85rem; font-style:italic; border-bottom:1px solid #ccc; padding-bottom:6px;"></div>
+        <div id="lang-modal-list" class="flex-col gap-4" style="max-height:240px; overflow-y:auto; padding:4px;"></div>
+        <div style="border-top:1px solid #ccc; padding-top:6px;" class="flex-col gap-4">
+          <span style="font-size:0.8rem; font-weight:bold; font-family:var(--font-heading);">IDIOMA PERSONALIZADO:</span>
+          <div class="flex gap-4">
+            <input type="text" id="custom-lang-input" placeholder="Nombre (ej. Dracónico arcano)" style="border:1px solid #000; padding:4px; font-size:0.9rem;">
+            <button type="button" class="btn-action clickable" style="font-size:0.8rem;" onclick="addCustomLanguage()">+ AÑADIR</button>
+          </div>
+        </div>
+        <button type="button" class="btn-action clickable mt-5" style="justify-content:center; padding:8px; background:#000; color:#fff;" onclick="saveLanguagesFromModal()">GUARDAR IDIOMAS</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODALES DE UI -->
+  <div id="spell-modal" class="modal-overlay">
+    <div class="modal-content"><div class="modal-header"><h3 id="modal-title" style="color:white; margin:0;">CONJUROS</h3><button type="button" class="btn-delete" onclick="closeSpellModal()">✕</button></div><div class="modal-body" id="modal-spell-list"></div></div>
+  </div>
+  <div id="spell-info-modal" class="modal-overlay" style="z-index: 100001;">
+    <div class="modal-content" style="max-width:450px;"><div class="modal-header"><h3 id="spell-info-title" style="color:white; margin:0;">INFO</h3><button type="button" class="btn-delete" onclick="document.getElementById('spell-info-modal').style.display='none'">✕</button></div><div class="modal-body" style="padding:15px; text-align:left;"><div style="font-size:0.85rem; color:#444; margin-bottom:10px; border-bottom:1px solid #ccc; padding-bottom:6px;"><strong>Alcance:</strong> <span id="spell-info-range"></span><br><strong>Duración:</strong> <span id="spell-info-duration"></span></div><div id="spell-info-desc" style="line-height:1.5; font-size:0.95rem; white-space:pre-wrap;"></div></div></div>
+  </div>
+
+  <!-- MODAL CONJURO GOLPEAR -->
+  <div id="spell-strike-modal" class="modal-overlay" style="z-index: 100002;">
+    <div class="modal-content" style="max-width:360px;">
+      <div class="modal-header">
+        <h3 style="color:white; margin:0;">CONJURO: GOLPEAR</h3>
+        <button type="button" class="btn-delete" onclick="document.getElementById('spell-strike-modal').style.display='none'">✕</button>
+      </div>
+      <div class="modal-body" style="padding:15px; gap:8px;">
+        <p style="font-size:0.85rem; margin:0 0 8px 0; font-style:italic;">Selecciona el arma cuerpo a cuerpo a encantar (+1d6 daño, mágica durante 1 turno):</p>
+        <div id="strike-weapons-list" class="flex-col gap-4"></div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- MODAL AÑADIR EFECTO TEMPORAL -->
+  <div id="add-effect-modal" class="modal-overlay">
+    <div class="modal-content" style="max-width:360px;">
+      <div class="modal-header">
+        <h3 style="color:white; margin:0;">AÑADIR EFECTO</h3>
+        <button type="button" class="btn-delete" onclick="document.getElementById('add-effect-modal').style.display='none'">✕</button>
+      </div>
+      <div class="modal-body" style="padding:15px; gap:8px;">
+        <span style="font-family:var(--font-heading); font-size:0.95rem; font-weight:bold;">EFECTOS PREDETERMINADOS:</span>
+        <button type="button" class="btn-action clickable" style="justify-content:space-between; padding:6px 10px; background:#0056b3;" onclick="addEffectFromPreset('Bendición', 0, 1, 1, 0, 'buff')"><span>Bendición (Aliado)</span><span>+1 Atq / +1 Daño</span></button>
+        <button type="button" class="btn-action clickable" style="justify-content:space-between; padding:6px 10px; background:#880000;" onclick="addEffectFromPreset('Infortunio', 0, -1, -1, 0, 'debuff')"><span>Infortunio (Enemigo)</span><span>-1 Atq / -1 Daño</span></button>
+        <button type="button" class="btn-action clickable" style="justify-content:space-between; padding:6px 10px; background:#0056b3;" onclick="addEffectFromPreset('Protección contra el mal', 1, 0, 0, 1, 'buff')"><span>Prot. contra el mal</span><span>+1 CA / +1 TS</span></button>
+        <button type="button" class="btn-action clickable" style="justify-content:space-between; padding:6px 10px; background:#0056b3;" onclick="addEffectFromPreset('Escudo', 0, 0, 0, 0, 'buff')"><span>Escudo</span><span>CA 17 [2] proy</span></button>
+        <button type="button" class="btn-action clickable" style="justify-content:space-between; padding:6px 10px; background:#0056b3;" onclick="addEffectFromPreset('Celeridad', 0, 0, 0, 0, 'buff')"><span>Celeridad</span><span>Doble movimiento / 2x Atq</span></button>
+
+        <div style="border-top:1px solid #ccc; margin-top:8px; padding-top:8px;" class="flex-col gap-4">
+          <span style="font-family:var(--font-heading); font-size:0.9rem; font-weight:bold;">EFECTO PERSONALIZADO:</span>
+          <input type="text" id="custom-eff-name" placeholder="Nombre (ej. Canción Bárdica)" style="border:1px solid black; padding:4px; font-size:0.9rem;">
+          <div class="grid" style="grid-template-columns:1fr 1fr; gap:5px; display:grid;">
+            <div><span style="font-size:0.75rem;">Mod. CA:</span><input type="number" id="custom-eff-ac" value="0" style="border:1px solid black; text-align:center; padding:2px; font-size:0.9rem;"></div>
+            <div><span style="font-size:0.75rem;">Mod. Ataque:</span><input type="number" id="custom-eff-atk" value="0" style="border:1px solid black; text-align:center; padding:2px; font-size:0.9rem;"></div>
+            <div><span style="font-size:0.75rem;">Mod. Daño:</span><input type="number" id="custom-eff-dmg" value="0" style="border:1px solid black; text-align:center; padding:2px; font-size:0.9rem;"></div>
+            <div><span style="font-size:0.75rem;">Mod. TS:</span><input type="number" id="custom-eff-save" value="0" style="border:1px solid black; text-align:center; padding:2px; font-size:0.9rem;"></div>
+          </div>
+          <button type="button" class="btn-action clickable mt-5" style="justify-content:center; padding:6px;" onclick="addCustomEffect()">AÑADIR PERSONALIZADO</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="pre-roll-modal" class="modal-overlay">
+    <div class="modal-content" style="max-width:320px;"><div class="modal-header"><h3 style="color:white; margin:0;" id="pre-roll-title">TIRADA</h3><button type="button" class="btn-delete" onclick="document.getElementById('pre-roll-modal').style.display='none'">✕</button></div>
+      <div class="modal-body" style="padding:15px; text-align:center;">
+        <div id="roll-mod-container"><span style="font-family:var(--font-heading); font-size:1.1rem;">Modificador a la tirada:</span><div class="flex justify-center align-center gap-5 mt-5 mb-10"><select id="roll-mod-val" style="width:80px; height:40px; border:2px solid black; text-align:center; font-weight:bold; font-size:1.3rem; appearance:auto; cursor:pointer;"><option value="5">+5</option><option value="4">+4</option><option value="3">+3</option><option value="2">+2</option><option value="1">+1</option><option value="0" selected>0</option><option value="-1">-1</option><option value="-2">-2</option><option value="-3">-3</option><option value="-4">-4</option><option value="-5">-5</option></select></div></div>
+        <div id="roll-spell-container" style="display:none;"><span style="font-family:var(--font-heading); font-size:1.1rem;">Fórmula de dados:</span><div class="flex justify-center align-center gap-5 mt-5 mb-10"><input type="text" id="roll-spell-formula" value="1d6" style="width:200px; border:2px solid black; text-align:center; font-weight:bold; font-size:1.1rem;"></div></div>
+        <button type="button" class="btn-action clickable" style="width:100%; justify-content:center; font-size:1.3rem; padding:10px; margin-top:10px;" onclick="executeRoll()">LANZAR</button>
+      </div></div>
+  </div>
+  <div id="custom-dialog-modal" class="modal-overlay" style="z-index:100002;"><div class="modal-content" style="max-width:320px; text-align:center;"><div class="modal-header" style="justify-content:center;"><h3 style="color:white; margin:0; letter-spacing:1px;" id="dialog-title">AVISO</h3></div><div class="modal-body" style="padding:20px;"><p id="dialog-message" style="font-size:1.1rem; font-family:var(--font-body); margin:0 0 20px 0; line-height:1.4; text-wrap:balance;"></p><div class="flex justify-center gap-10" id="dialog-buttons"></div></div></div></div>
+  <div id="shop-modal" class="modal-overlay"><div class="modal-content" style="max-height:85vh;"><div class="modal-header"><h3 style="color:white; margin:0;">TIENDA (SRD)</h3><button type="button" class="btn-delete" onclick="closeShop()">✕</button></div><div class="modal-body" id="shop-list" style="padding:10px; overflow-y:auto; flex:1;"></div></div></div>
+  
+  <div id="dice-result-overlay">
+    <div id="dice-animation-container"></div>
+    <div class="dice-result-panel" id="dice-result-panel">
+      <h3 style="border-bottom:2px solid black; margin-bottom:5px; padding-bottom:3px; font-size:1.3rem;" id="result-title">RESULTADO</h3>
+      <div id="result-breakdown" class="result-text"></div>
+      <div id="result-final" class="result-highlight"></div>
+      <button type="button" class="btn-action" style="justify-content:center; margin-top:10px; font-size:1.1rem; padding:6px;" onclick="document.getElementById('dice-result-overlay').style.display='none'">ACEPTAR</button>
+    </div>
+  </div>
+
+  <!-- SCRIPTS MODULARES -->
+  <script src="spells_data.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
