@@ -321,12 +321,12 @@ function acceptWizLanguages() {
   
   setText('wiz-hp-die-label', `TIRAR 1d${hd}`);
 
-  // Chip de CON con color semántico
+  // Chip de CON con color semántico (gris neutro si es 0 para diferenciarlo del botón)
   const conChip = document.getElementById('wiz-chip-con');
   if (conChip) {
     conChip.innerText = `CON: ${OSE.fS(modCon)}`;
-    conChip.style.background = modCon > 0 ? '#2e7d32' : modCon < 0 ? '#c62828' : '#000';
-    conChip.style.borderColor = modCon > 0 ? '#1b5e20' : modCon < 0 ? '#b71c1c' : '#000';
+    conChip.style.background = modCon > 0 ? '#2e7d32' : modCon < 0 ? '#c62828' : '#555';
+    conChip.style.borderColor = modCon > 0 ? '#1b5e20' : modCon < 0 ? '#b71c1c' : '#555';
   }
 
   setVal('wiz-hp-val', '');
@@ -368,8 +368,8 @@ function calcWizHPTotal() {
   const conChip = document.getElementById('wiz-chip-con');
   if (conChip) {
     conChip.innerText = `CON: ${OSE.fS(modCon)}`;
-    conChip.style.background = modCon > 0 ? '#2e7d32' : modCon < 0 ? '#c62828' : '#000';
-    conChip.style.borderColor = modCon > 0 ? '#1b5e20' : modCon < 0 ? '#b71c1c' : '#000';
+    conChip.style.background = modCon > 0 ? '#2e7d32' : modCon < 0 ? '#c62828' : '#555';
+    conChip.style.borderColor = modCon > 0 ? '#1b5e20' : modCon < 0 ? '#b71c1c' : '#555';
   }
 
   setVal('wiz-hp-val', total);

@@ -993,23 +993,27 @@ input[type="checkbox"] {
     font-size: 0.88rem !important;
   }
 
-  /* PÁGINA 1: DISPOSICIÓN EXACTA EN 2 COLUMNAS CON ESPACIADO PROPORCIONADO */
+  /* PÁGINA 1: DISPOSICIÓN EXACTA EN 2 COLUMNAS ALINEADAS */
   .print-page-1-grid {
     display: grid !important;
     grid-template-columns: 1fr 1fr !important;
     gap: 12px !important;
-    align-items: start !important;
+    align-items: stretch !important;
   }
 
   .print-col-left {
     display: flex !important;
     flex-direction: column !important;
+    justify-content: space-between !important;
     gap: 3px !important;
   }
 
+  /* Columna derecha con altura completa y distribución vertical equilibrada */
   .print-col-right {
     display: flex !important;
     flex-direction: column !important;
+    justify-content: space-between !important;
+    height: 100% !important;
     gap: 3px !important;
   }
 
@@ -1019,15 +1023,15 @@ input[type="checkbox"] {
     font-size: 1rem !important;
   }
 
-  /* RECUADRO DE RETRATO EN IMPRESIÓN */
+  /* RECUADRO DE RETRATO EN IMPRESIÓN (ALINEADO A 'SISTEMA DE CA') */
   .print-portrait-container {
     display: flex !important;
     flex-direction: column !important;
-    margin-bottom: 6px !important;
+    margin-bottom: 4px !important;
   }
   .print-portrait-box {
     width: 100% !important;
-    height: 165px !important;
+    height: 235px !important;
     border: 1.5px solid #000 !important;
     background: #fff !important;
   }
