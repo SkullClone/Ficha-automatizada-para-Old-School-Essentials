@@ -52,8 +52,8 @@ function isMagicAccessory(text) {
   // Detección universal: nombres de accesorios, palabras mágicas o etiquetas de atributos/bonos
   return /anillo|colgante|collar|brazalete|brazales|pendiente|amuleto|talisman|talismán|capa|cintur[oó]n|cinto|guanteletes|guantes|diadema|yelmo|perla|broche|tiara|medall[oó]n|vara|varita|orbe|botas|piedra/i.test(lower) ||
          /maldit|m[aá]gic|bono/i.test(lower) ||
-         /(?:fue|str|int|sab|wis|des|dex|con|car|cha|fuerza|destreza|constitucion|constitución|sabiduria|sabiduría|inteligencia|carisma|atq|ataque|da[nñ]o|dmg|ca|ts|pg|hp|px|xp|exp)\s*[:\+\-]/i.test(lower) ||
-         /[:\+\-]\s*(?:fue|str|int|sab|wis|des|dex|con|car|cha|fuerza|destreza|constitucion|constitución|sabiduria|sabiduría|inteligencia|carisma|atq|ataque|da[nñ]o|dmg|ca|ts|pg|hp|px|xp|exp)/i.test(lower) ||
+         /(?:fue|str|int|sab|wis|des|dex|con|car|cha|fuerza|destreza|constitucion|constitución|sabiduria|sabiduría|inteligencia|carisma|atq|ataque|ba|da[nñ]o|dmg|ca|ts|pg|hp|px|xp|exp)\s*[:\+\-]/i.test(lower) ||
+         /[:\+\-]\s*(?:fue|str|int|sab|wis|des|dex|con|car|cha|fuerza|destreza|constitucion|constitución|sabiduria|sabiduría|inteligencia|carisma|atq|ataque|ba|da[nñ]o|dmg|ca|ts|pg|hp|px|xp|exp)/i.test(lower) ||
          /pg\s*[:\s]*[xX]\d+/i.test(lower);
 }
 
@@ -142,7 +142,7 @@ function getPassiveAccessoryBonuses() {
     }
 
     // 7. Ataque y Daño directos
-    let atkModMatch = raw.match(/([\+\-]\d+)\s*(?:al?\s+)?(atq|ataque|impactar)\b/i) || raw.match(/\b(atq|ataque|impactar)\s*[:\s]*([\+\-]\d+)/i);
+    let atkModMatch = raw.match(/([\+\-]\d+)\s*(?:al?\s+)?(atq|ataque|impactar|ba)\b/i) || raw.match(/\b(atq|ataque|impactar|ba)\s*[:\s]*([\+\-]\d+)/i);
     if (atkModMatch) {
       bonuses.atk += (parseInt(atkModMatch[1]) || parseInt(atkModMatch[2]));
     }
@@ -1598,7 +1598,7 @@ function updateWeapons() {
     let bMatch = rawName.match(/(?:^|\s)([\+\-]\d+)(?:\s|$|\()/);
     if (bMatch) bonus = parseInt(bMatch[1]);
 
-    let atkMatch = rawName.match(/([\+\-]\d+)\s*(?:al?\s+)?(atq|ataque|impactar)/i) || rawName.match(/\b(atq|ataque|impactar)\s*[:\s]*([\+\-]\d+)/i);
+    let atkMatch = rawName.match(/([\+\-]\d+)\s*(?:al?\s+)?(atq|ataque|impactar|ba)\b/i) || rawName.match(/\b(atq|ataque|impactar|ba)\s*[:\s]*([\+\-]\d+)/i);
     if (atkMatch) bonus = parseInt(atkMatch[1]) || parseInt(atkMatch[2]);
 
     let dmgMatch = rawName.match(/([\+\-]\d+)\s*(?:al?\s+)?(da[nñ]o|dmg)/i) || rawName.match(/\b(da[nñ]o|dmg)\s*[:\s]*([\+\-]\d+)/i);
@@ -2621,6 +2621,12 @@ function applySaveData(d) {
   if (d['coin-gp'] !== undefined) { d['coin-mo'] = d['coin-gp']; delete d['coin-gp']; }
   if (d['coin-sp'] !== undefined) { d['coin-ml'] = d['coin-sp']; delete d['coin-sp']; }
   if (d['coin-cp'] !== undefined) { d['coin-mc'] = d['coin-cp']; delete d['coin-cp']; }
+
+  // FIX: Llenar el dropdown de nivel con la clase guardada ANTES de asignar el valor
+  if (d['char-class']) {
+    setVal('char-class', d['char-class']);
+    updateLevelDropdown();
+  }
 
   Object.keys(d).forEach(k => {
     if (k !== 'inv' && k !== 'sp' && k !== 'thrown' && k !== 'effects' && k !== 'hpHistory' && k !== 'languagesFixed' && k !== 'baseRolledHP') {
