@@ -378,6 +378,7 @@
           <div class="flex gap-5 mb-5 align-center mov-row"><div class="stat-box" style="height:30px; width:40px; font-size:0.85rem;">Enc</div><div class="stat-input" style="height:30px; width:65px;"><input type="text" id="mov-encounter" value="40'" readonly style="font-weight:bold;"></div><div class="italic" style="font-size:0.75rem; flex:1; line-height:1.1;">Encuentro (pies/asalto)</div></div>
         </div>
 
+        <!-- HABILIDADES GENERALES (NO LADRÓN) -->
         <div id="sec-general-skills">
           <h2>Habilidades de Aventura</h2>
           <div class="flex-col gap-4">
@@ -389,6 +390,25 @@
             <div class="stat-row adventure-skill-row"><div class="stat-box clickable" style="font-size:1rem; width:32px; height:32px;" onclick="initRoll('skill','skill-es-val','Encontrar Secreta')">ES</div><div class="stat-input input-with-label" style="height:32px; width:52px;"><input type="number" id="skill-es-val" value="1"><span class="inner-label">-en-6</span></div><div class="stat-desc"><span>Encontrar puerta secreta</span></div></div>
           </div>
         </div>
+
+        <!-- HABILIDADES DE LADRÓN (UBICADAS EN PÁGINA 1 EN LUGAR DE HABILIDADES DE AVENTURA) -->
+        <div id="sec-thief" style="display:none; margin-top:0;">
+          <h2>Habilidades de Ladrón</h2>
+          <div class="flex-col gap-4">
+            <div class="stat-row"><div class="stat-box clickable" style="font-size:1rem; width:36px; height:32px;" onclick="initRoll('thief','thief-ac','Abrir Cerraduras')">AC</div><div class="input-percent"><input type="number" id="thief-ac"><span class="percent-symbol">%</span></div><div class="stat-desc"><span><b>Abrir cerraduras</b> (1 turno)</span></div></div>
+            <div class="stat-row"><div class="stat-box clickable" style="font-size:1rem; width:36px; height:32px;" onclick="initRoll('thief','thief-et','Encontrar/Retirar Trampas')">ET</div><div class="input-percent"><input type="number" id="thief-et"><span class="percent-symbol">%</span></div><div class="stat-desc"><span><b>Encontrar/Retirar trampas</b> (1 turno)</span></div></div>
+            <div class="stat-row"><div class="stat-box clickable" style="font-size:1rem; width:36px; height:32px;" onclick="initRoll('thief','thief-rb','Robar Bolsillos')">RB</div><div class="input-percent"><input type="number" id="thief-rb"><span class="percent-symbol">%</span></div><div class="stat-desc"><span><b>Robar bolsillos / Hurtar</b></span></div></div>
+            <div class="stat-row"><div class="stat-box clickable" style="font-size:1rem; width:36px; height:32px;" onclick="initRoll('thief','thief-ms','Moverse en Silencio')">MS</div><div class="input-percent"><input type="number" id="thief-ms"><span class="percent-symbol">%</span></div><div class="stat-desc"><span><b>Moverse en silencio</b></span></div></div>
+            <div class="stat-row"><div class="stat-box clickable" style="font-size:1rem; width:36px; height:32px;" onclick="initRoll('thief','thief-es','Esconderse')">ES</div><div class="input-percent"><input type="number" id="thief-es"><span class="percent-symbol">%</span></div><div class="stat-desc"><span><b>Esconderse en las sombras</b></span></div></div>
+            <div class="stat-row"><div class="stat-box clickable" style="font-size:1rem; width:36px; height:32px;" onclick="initRoll('thief','thief-em','Escalar Muros')">EM</div><div class="input-percent"><input type="number" id="thief-em"><span class="percent-symbol">%</span></div><div class="stat-desc"><span><b>Escalar muros</b></span></div></div>
+            <div class="stat-row"><div class="stat-box clickable" style="font-size:1rem; width:36px; height:32px;" onclick="initRoll('thief','thief-er','Escuchar Ruidos')">ER</div><div class="input-percent"><input type="number" id="thief-er"><span class="percent-symbol">%</span></div><div class="stat-desc"><span><b>Escuchar ruidos</b></span></div></div>
+            <div class="border mt-4" style="padding:4px; background-color:#fafafa;">
+              <div class="flex align-center justify-between"><span style="font-family:var(--font-heading); font-size:1rem; font-weight:bold;">APUÑALAR (Por la espalda)</span><button type="button" class="btn-action clickable" style="font-size:0.8rem;" onclick="initRoll('backstab', null, 'Ataque por la Espalda')">TIRAR (+4)</button></div>
+              <div class="flex align-center gap-5 mt-4"><span class="italic" style="font-size:0.75rem; flex:1;">Multiplicador Daño/Sorpresa:</span><input type="text" id="thief-backstab" value="x2 Daño" style="width:75px; border-bottom:2px solid black; text-align:center; font-weight:bold; font-family:var(--font-heading);"></div>
+            </div>
+          </div>
+        </div>
+
       </div>
 
     </div>
@@ -399,23 +419,6 @@
     <div class="print-page-2-grid">
       
       <!-- SECCIONES DE MAGIA / CLASE -->
-      <div id="sec-thief" style="display:none; margin-top:6px;">
-        <h2>Habilidades de Ladrón</h2>
-        <div class="flex-col gap-4">
-          <div class="stat-row"><div class="stat-box clickable" style="font-size:1rem; width:36px; height:32px;" onclick="initRoll('thief','thief-ac','Abrir Cerraduras')">AC</div><div class="input-percent"><input type="number" id="thief-ac"><span class="percent-symbol">%</span></div><div class="stat-desc"><span><b>Abrir cerraduras</b> (1 turno)</span></div></div>
-          <div class="stat-row"><div class="stat-box clickable" style="font-size:1rem; width:36px; height:32px;" onclick="initRoll('thief','thief-et','Encontrar/Retirar Trampas')">ET</div><div class="input-percent"><input type="number" id="thief-et"><span class="percent-symbol">%</span></div><div class="stat-desc"><span><b>Encontrar/Retirar trampas</b> (1 turno)</span></div></div>
-          <div class="stat-row"><div class="stat-box clickable" style="font-size:1rem; width:36px; height:32px;" onclick="initRoll('thief','thief-rb','Robar Bolsillos')">RB</div><div class="input-percent"><input type="number" id="thief-rb"><span class="percent-symbol">%</span></div><div class="stat-desc"><span><b>Robar bolsillos / Hurtar</b></span></div></div>
-          <div class="stat-row"><div class="stat-box clickable" style="font-size:1rem; width:36px; height:32px;" onclick="initRoll('thief','thief-ms','Moverse en Silencio')">MS</div><div class="input-percent"><input type="number" id="thief-ms"><span class="percent-symbol">%</span></div><div class="stat-desc"><span><b>Moverse en silencio</b></span></div></div>
-          <div class="stat-row"><div class="stat-box clickable" style="font-size:1rem; width:36px; height:32px;" onclick="initRoll('thief','thief-es','Esconderse')">ES</div><div class="input-percent"><input type="number" id="thief-es"><span class="percent-symbol">%</span></div><div class="stat-desc"><span><b>Esconderse en las sombras</b></span></div></div>
-          <div class="stat-row"><div class="stat-box clickable" style="font-size:1rem; width:36px; height:32px;" onclick="initRoll('thief','thief-em','Escalar Muros')">EM</div><div class="input-percent"><input type="number" id="thief-em"><span class="percent-symbol">%</span></div><div class="stat-desc"><span><b>Escalar muros</b></span></div></div>
-          <div class="stat-row"><div class="stat-box clickable" style="font-size:1rem; width:36px; height:32px;" onclick="initRoll('thief','thief-er','Escuchar Ruidos')">ER</div><div class="input-percent"><input type="number" id="thief-er"><span class="percent-symbol">%</span></div><div class="stat-desc"><span><b>Escuchar ruidos</b></span></div></div>
-          <div class="border mt-4" style="padding:4px; background-color:#fafafa;">
-            <div class="flex align-center justify-between"><span style="font-family:var(--font-heading); font-size:1rem; font-weight:bold;">APUÑALAR (Por la espalda)</span><button type="button" class="btn-action clickable" style="font-size:0.8rem;" onclick="initRoll('backstab', null, 'Ataque por la Espalda')">TIRAR (+4)</button></div>
-            <div class="flex align-center gap-5 mt-4"><span class="italic" style="font-size:0.75rem; flex:1;">Multiplicador Daño/Sorpresa:</span><input type="text" id="thief-backstab" value="x2 Daño" style="width:75px; border-bottom:2px solid black; text-align:center; font-weight:bold; font-family:var(--font-heading);"></div>
-          </div>
-        </div>
-      </div>
-
       <div id="sec-turn-undead" style="display:none; margin-top:6px;">
         <div class="flex align-center justify-between mb-4"><h2 style="margin:0;">Expulsar Muertos</h2><button type="button" class="btn-action clickable" style="font-size:0.8rem;" onclick="initRoll('turn_undead', null, 'Expulsar Muertos')">TIRAR 2d6</button></div>
         <div style="font-size:0.75rem; font-style:italic; line-height:1.1; margin-bottom:4px;">Lanza 2d6 y evalúa la tabla calculando a qué criaturas afecta.</div>

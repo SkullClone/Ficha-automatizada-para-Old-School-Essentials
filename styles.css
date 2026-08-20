@@ -1117,6 +1117,54 @@ input[type="checkbox"] {
     line-height: 20px !important;
   }
 
+  /* HABILIDADES DE LADRÓN EN IMPRESIÓN (COMPACTAS PARA NO DESBORDAR) */
+  #sec-thief {
+    margin-top: 0 !important;
+  }
+  #sec-thief h2 {
+    margin-top: 2px !important;
+    margin-bottom: 3px !important;
+    font-size: 0.95rem !important;
+  }
+  #sec-thief .stat-row {
+    margin-bottom: 2px !important;
+    gap: 4px !important;
+  }
+  #sec-thief .stat-box {
+    width: 24px !important;
+    height: 18px !important;
+    font-size: 0.78rem !important;
+  }
+  #sec-thief .input-percent {
+    width: 38px !important;
+    min-width: 38px !important;
+    height: 18px !important;
+    border: 1.5px solid #000 !important;
+  }
+  #sec-thief .input-percent input {
+    font-size: 0.8rem !important;
+    line-height: 18px !important;
+    padding-right: 10px !important;
+  }
+  #sec-thief .input-percent .percent-symbol {
+    font-size: 0.65rem !important;
+    right: 2px !important;
+  }
+  #sec-thief .stat-desc {
+    font-size: 6.8pt !important;
+    line-height: 1 !important;
+  }
+  #sec-thief .border {
+    padding: 2px 4px !important;
+    margin-top: 3px !important;
+    border: 1.5px solid #000 !important;
+  }
+  #sec-thief #thief-backstab {
+    height: 18px !important;
+    font-size: 0.85rem !important;
+    width: 60px !important;
+  }
+
   .combat-matrix {
     border: 1.5px solid #000 !important;
     margin-top: 3px !important;
