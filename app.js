@@ -439,8 +439,9 @@ function renderWizShop() {
           <span style="font-weight:bold; font-family:var(--font-heading); font-size:1rem;">${item.n}</span><br>
           <span style="font-size:0.75rem; font-style:italic; color:#444;">Peso: ${item.w} mo${item.d ? ` | <b>${item.d}</b>` : ''}</span>
         </div>
-        <button type="button" class="btn-action clickable" style="font-size:0.9rem;" onclick="buyWizItem('${item.n}', ${item.p}, ${item.w})">${item.p} mo</button>
+        <div style="font-weight:bold; font-size:1.1rem; text-align:right; font-family:var(--font-heading);">${item.p} mo</div>
       `;
+      div.onclick = () => buyWizItem(item.n, item.p, item.w);
       catContainer.appendChild(div);
     });
     container.appendChild(details);
